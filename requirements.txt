@@ -2,4 +2,5 @@ plotly
 matplotlib
 requests
 numpy
+st_pages
 pandas
