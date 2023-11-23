@@ -203,7 +203,9 @@ def graphique(jour, df, nombre_stats):
     """
     fig = go.Figure()
     
-    ticktext_total = []     
+    ticktext_total = []   
+    # affichage des yticks de la même couleur que la couleur de fond de l'appli (cf fichier config.toml)
+    # pour qu'ils n'apparaissent pas mais qu'ils laissent leur place aux annotations
     ticktext_stat = [color_station_name("#F5F5FF", station) for k, station in enumerate(liste_nom_stations)]
       
     fig.add_trace(
@@ -246,6 +248,7 @@ def graphique(jour, df, nombre_stats):
     fig.update_layout(title = dict({'text' : 'Nombre de vélos dispo par station durant la journée',  # <b>' + str(jour) + ' octobre</b>',
                                 'x' : 0.5,
                                 'xanchor': 'center'}),
+                      # on affiche quand même les yticks, pour que les annotations puissent prendre leur place
                       yaxis = dict(showgrid = False, tickmode = 'array', ticktext = ticktext_stat, tickvals = liste_nom_stations),
                       annotations = annotations,
                       plot_bgcolor = 'rgba(0,0,0,0)',
@@ -296,6 +299,8 @@ def pie_rouge(df):
                                                                   font_color = df_rouge['vehicules.total'].apply(lambda x : 'black' if x != '0' else 'white')),
                                                  name = '',
                                                  domain = dict(x =[0.25, 0.75], y= [0.1, 0.9]),
+                                                 sort = False, # pour ne pas retrier suivant les values, car je veux suivant les labels
+                                                 direction ='clockwise' # et que ça s'affiche bien dans l'ordre horaire
                                                 )],
                                    )
         
@@ -374,7 +379,8 @@ def pie_bleu(df, nombre_stats):
                                                                   font_color = 'black'),
                                                  name = '',
                                                  domain = dict(x = [0.25, 0.75], y = [0.1, 0.9]),
-                                                 
+                                                 sort = False,
+                                                 direction ='clockwise'
                                                 )],
                                    )
         fig_bleue.update_traces(textinfo = 'none') #textposition='inside')
@@ -465,7 +471,7 @@ def graph_jour_total(df):
                           )
     # une flèche pour montrer à quoi correspond le titre
     fig_jour.add_annotation(x = '0',
-                            y = hr_r + 12,
+                            y = hr_r + 20,
                             ax = '0',
                             ay = 1.1*int(df_heure_tot['name'].max()/4),
                             xref = 'x',
@@ -639,10 +645,19 @@ def map_folium(df, nombre_stats):
         
 # DEBUT PAGE STREAMLIT
 
-st.markdown("<h2><center>" + bicolor(c_blue, c_red, 'Statistiques du nombre de vélos dispos par station Cyclam') + "</b></center></h2>", unsafe_allow_html = True)
-st.markdown("<h5 style='text-align:center;'>par jour durant un mois d'octobre</h5>", unsafe_allow_html = True)
-st.markdown("Choisissez le jour du mois d'octobre :")
-
+col00, col01, col02, col03, col04 = st.columns([3,2,12,2,3])
+with col01:
+    st.image('images/Electric_bike_blue.png',use_column_width = True)
+        
+with col02:
+    st.markdown("<h2><center>" + bicolor(c_blue, c_red, 'Statistiques du nombre de vélos dispos par station Cyclam') + "</b></center></h2>", unsafe_allow_html = True)
+    st.markdown("<h5 style='text-align:center;'>par jour durant un mois d'octobre</h5>", unsafe_allow_html = True)
+        
+with col03:
+    st.image('images/Electric_bike_red.png',use_column_width = True)
+        
+st.markdown("Choisissez le jour du mois :")
+        
 df = df_choisi(jour, heure_deb)
  
 # pour éviter un pb de rafraîchement automatique de la folium.map
@@ -656,18 +671,18 @@ except AttributeError:
 
 
 
-with st.form('form_1'):
+#with st.form('form_1'):
     
-    jour = st.slider(label = "",
-                                min_value = 1,
-                                max_value = nb_jours, 
-                                value=10,
-                               
+jour = st.select_slider(label = "",
+                        options = list(range(1, nb_jours + 1)),
+                                #min_value = 1,
+                                #max_value = nb_jours, 
+                                value=10,                               
                                )
-    submit1 = st.form_submit_button("OK !")
+    #submit1 = st.form_submit_button("OK !")
             
 
-if submit1 or st.session_state.keep_graphics:
+if st.session_state.keep_graphics: #submit1 or st.session_state.keep_graphics:
     st.session_state.keep_graphics = True
    
     df = df_choisi(jour, heure_deb)
@@ -675,15 +690,14 @@ if submit1 or st.session_state.keep_graphics:
     nombre_stats = nombre_stat(df)
     
     jour_c = str(jour) if jour > 1 else '1er'
+    
     st.markdown("<h4 style='text-align:center;background-color:#ededed'>" + bicolor(c_blue, c_red, "Journée du {jour} octobre".format(jour=jour_c)), unsafe_allow_html = True)
     
-    col1, col2, col3 = st.columns([4,8,10])
-     
+    col1, col2, col3 = st.columns([4,8,10])     
     with col1:
         cont0 = st.container()
         with cont0:
-            graph_classement(df, nombre_stats)
-        
+            graph_classement(df, nombre_stats)        
         
     with col2:
         cont1 = st.container()
@@ -726,10 +740,17 @@ if submit1 or st.session_state.keep_graphics:
 
     
 infos = """
-<u><strong>Infos :</strong></u>
+----------------------------------------
+
+
+<u><strong>Infos :</strong></u>  
+Les données affichées sont basées sur des données recueillies en temps réel via API toutes les 15 minutes,  
+mais restent purement indicatives (des vélos peuvent être loués entre deux relevés).
 
 - Statistiques recueillies toutes les 15 minutes via API
-- traitement
+- traitement python : pandas
+- graphiques : plotly
+- application et mise en ligne : streamlit
 
 
 
