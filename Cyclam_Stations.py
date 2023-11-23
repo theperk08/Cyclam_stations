@@ -25,6 +25,7 @@ st.set_page_config(page_title = "Statistiques stations Cyclam",
 
 # import dataset
 df_stations = pd.read_csv('df_stations_cyclam_2023_octobre_sorted.csv', sep = ';')
+df_positions = pd.read_csv('df_positions_stations.csv', sep = ';')
 
 # initialisation variables
 nb_jours = 31
@@ -105,7 +106,7 @@ def conv_h_min(hr):
 def heure_rouge(df):
     df_heure = df.groupby(['Date_heure','vehicules.total']).count().reset_index()
     df_heure = df_heure[df_heure['vehicules.total'] == '0']
-    liste_heures = list(df_heure[df_heure['id'] == df_heure['id'].max()]['Date_heure'])
+    liste_heures = list(df_heure[df_heure['name'] == df_heure['name'].max()]['Date_heure'])
     
     return liste_heures
 
@@ -171,13 +172,13 @@ def nombre_stat(df):
     nombre_stat_max = []
     nombre_stat_moy = []
     for station in liste_nom_stations:
-        df4 = df[df['name'] == station].groupby('vehicules.total').count()['id']
+        df4 = df[df['name'] == station].groupby('vehicules.total').count()['name']
         df4.drop(df4[df4.index == '?'].index, inplace = True)
         nombre_stat_min += [ df4.first_valid_index()]
         nombre_stat_max += [ df4.last_valid_index()]
         df4 = df4.reset_index()        
         df4['vehicules.total']= df4['vehicules.total'].astype('Int64')        
-        nombre_stat_moy += [np.average(df4['vehicules.total'], weights = df4['id'])]
+        nombre_stat_moy += [np.average(df4['vehicules.total'], weights = df4['name'])]
         
     return {'n_min': nombre_stat_min, 'n_moy' : nombre_stat_moy, 'n_max' : nombre_stat_max}
 
@@ -270,7 +271,7 @@ def pie_rouge(df):
     la station le plus souvent sans vélo dispo
     """
     
-    liste_rouge = [df[df['name'] == station].groupby('vehicules.total').count()['id'] for station in liste_nom_stations]
+    liste_rouge = [df[df['name'] == station].groupby('vehicules.total').count()['name'] for station in liste_nom_stations]
     numero_rouge = -1
     nb_rouge = 0
     for ni, liste_st in enumerate(liste_rouge):
@@ -280,11 +281,11 @@ def pie_rouge(df):
                 numero_rouge = ni
     if numero_rouge >= 0:
         df_rouge = pd.DataFrame(liste_rouge[numero_rouge]).reset_index().sort_values('vehicules.total')
-        df_rouge['Nombre_heures'] = df_rouge['id'].apply(lambda x : str((15*x)//60) + " h " + (str((15*x)%60) + ' m' if (15*x)%60 >0 else ''))
+        df_rouge['Nombre_heures'] = df_rouge['name'].apply(lambda x : str((15*x)//60) + " h " + (str((15*x)%60) + ' m' if (15*x)%60 >0 else ''))
         temps_max = str(df_rouge.loc[df_rouge['vehicules.total'] == '0', 'Nombre_heures'].item())
         
         fig_rouge = fig = go.Figure(data=[go.Pie(labels = df_rouge['vehicules.total'],
-                                                 values = df_rouge['id'],
+                                                 values = df_rouge['name'],
                                                  hole = .4,
                                                  marker = dict(colors = df_rouge['vehicules.total'].apply(lambda x: marker_color(x))),
                                                  customdata = df_rouge['Nombre_heures'],
@@ -352,16 +353,16 @@ def pie_bleu(df, nombre_stats):
     la station ayant le plus de vélos dispos en moyenne sur la journée
     """
     
-    liste_bleu = [df[df['name'] == station].groupby('vehicules.total').count()['id'] for station in liste_nom_stations]
+    liste_bleu = [df[df['name'] == station].groupby('vehicules.total').count()['name'] for station in liste_nom_stations]
     
     n_moy_idxmaxi = pd.Series(nombre_stats['n_moy']).idxmax()
     n_moy_maxi = max(nombre_stats['n_moy'])                
    
     if True:
         df_bleu = pd.DataFrame(liste_bleu[n_moy_idxmaxi]).reset_index().sort_values('vehicules.total')
-        df_bleu['Nombre_heures'] = df_bleu['id'].apply(lambda x : str((15*x)//60) + " h " + str((15*x)%60) + ' min')
+        df_bleu['Nombre_heures'] = df_bleu['name'].apply(lambda x : str((15*x)//60) + " h " + str((15*x)%60) + ' min')
         fig_bleue = fig = go.Figure(data=[go.Pie(labels = df_bleu['vehicules.total'],
-                                                 values = df_bleu['id'],
+                                                 values = df_bleu['name'],
                                                  hole = .4,
                                                  marker = dict(colors = df_bleu['vehicules.total'].apply(lambda x: marker_color(x))),
                                                  textinfo = 'percent+label',
@@ -427,20 +428,20 @@ def graph_jour_total(df):
     """
     df_heure_tot = df.groupby(['vehicules.total']).count().reset_index()
     fig_jour = go.Figure(go.Bar(x = df_heure_tot["vehicules.total"],
-                                y = df_heure_tot["id"]/4,
+                                y = df_heure_tot["name"]/4,
                                 marker = dict(color = df_heure_tot['vehicules.total'].apply(lambda x: marker_color(x))),
                                 #text_auto=True
-                                customdata = np.stack(((df_heure_tot['id']/4).apply(conv_h_min), df_heure_tot['vehicules.total']), axis =-1),
+                                customdata = np.stack(((df_heure_tot['name']/4).apply(conv_h_min), df_heure_tot['vehicules.total']), axis =-1),
                                 hovertemplate="<br>".join(["Nb vélos dispo : %{customdata[1]}",
                                                                             "pendant : %{customdata[0]}",
                                                                             ]),
                                 hoverlabel = dict(bgcolor=df_heure_tot['vehicules.total'].apply(lambda x: marker_color(x)),
                                                                   font_color = df_heure_tot['vehicules.total'].apply(lambda x : 'black' if x !='0' else 'white')),
                                 name = '',
-                                text = df_heure_tot["id"].apply(lambda x : str(x/4) + 'h')
+                                text = df_heure_tot["name"].apply(lambda x : str(x/4) + 'h')
                                )                         
                         )
-    nb_hr_rouge0 = df_heure_tot[df_heure_tot['vehicules.total'] == '0']['id'].item() / 4    
+    nb_hr_rouge0 = df_heure_tot[df_heure_tot['vehicules.total'] == '0']['name'].item() / 4    
     heure_rouge0 = conv_h_min(nb_hr_rouge0)    
     hr_r = int(nb_hr_rouge0)
     
@@ -466,7 +467,7 @@ def graph_jour_total(df):
     fig_jour.add_annotation(x = '0',
                             y = hr_r + 12,
                             ax = '0',
-                            ay = 1.1*int(df_heure_tot['id'].max()/4),
+                            ay = 1.1*int(df_heure_tot['name'].max()/4),
                             xref = 'x',
                             yref = 'y',
                             axref = 'x',
@@ -495,10 +496,10 @@ def graph_jour_heure(df, liste_heure_rouge):
     
     custom_dict = {i : (int(i) if i != '?' else 1000) for i in list(df['vehicules.total'].unique())}
     df['rank'] = df['vehicules.total'].map(custom_dict)   
-    df_heure = df.groupby(['Date_heure','rank']).agg(id =('id', 'count'), vehicules = ('vehicules.total' , 'first')).reset_index()
+    df_heure = df.groupby(['Date_heure','rank']).agg(name =('name', 'count'), vehicules = ('vehicules.total' , 'first')).reset_index()
     
     fig_jour_heure = go.Figure(go.Bar(x = df_heure["Date_heure"],
-                                      y = df_heure["id"],
+                                      y = df_heure["name"],
                                       marker = dict(color = df_heure['vehicules'].apply(lambda x: marker_color(x))),
                                       # les heures sont formatées par les ticks, mais j'en ai besoin sans formattage pour le hover
                                       customdata = np.stack((df_heure['vehicules'], df_heure['Date_heure']), axis = -1), #façon de regrouper plusieurs customdata  
@@ -606,11 +607,15 @@ def map_folium(df, nombre_stats):
     m = folium.Map(location = [49.74, 4.83], zoom_start = 10.5)   
     
     # on récupère les coord des stations
-    df_stat = df.groupby(['name']).agg({'position.latitude' : 'first', 'position.longitude' :'first'}).reset_index()
+    #df_stat = df.groupby(['name']).agg({'position.latitude' : 'first', 'position.longitude' :'first'}).reset_index()
+    
+    for station in liste_nom_stations:
+        pass
     
     # on place les stations sur la carte
     for k, station in enumerate(liste_nom_stations):        
-        point = [df_stat.loc[df_stat['name'] == station, 'position.latitude'], df_stat.loc[df_stat['name'] == station, 'position.longitude']] 
+        #point = [df_stat.loc[df_stat['name'] == station, 'position.latitude'], df_stat.loc[df_stat['name'] == station, 'position.longitude']] 
+        point = [df_positions.loc[k, 'latitude'], df_positions.loc[k, 'longitude']]
         # création d'un bel affichage popup avec les stats de la station
         html = '<link rel="stylesheet" href="https://site-assets.fontawesome.com/releases/v6.4.2/css/all.css">' + station + '<br>' + '<br>'
         html += "<span style='color:{:s}'>Nb vélos dispo min : ".format(dico_color_map[str(nombre_stats['n_min'][k])]) + str(nombre_stats['n_min'][k]) + '</span><br>'
