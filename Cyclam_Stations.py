@@ -415,7 +415,7 @@ def pie_bleu(df, nombre_stats):
                                         opacity = 0.75,
                                         layer = "above")) #below
         
-        st.markdown("<h4 style='color:{c_blue};text-align:center;'>".format(c_blue=c_blue) + liste_nom_stations[n_moy_idxmaxi]  + "</h4><p style='text-align:center'> (station ayant le plus de vélos dispos :<br>{:s} en moyenne)</p>".format(str(round(n_moy_maxi,1))), unsafe_allow_html = True)
+        st.markdown("<h4 style='color:{c_blue};text-align:center;'>".format(c_blue=c_blue) + liste_nom_stations[n_moy_idxmaxi] + "</h4><p style='text-align:center'> (station ayant le plus de vélos dispos :<br>{:s} en moyenne)</p>".format(str(round(n_moy_maxi,1))), unsafe_allow_html = True)
         
         st.plotly_chart(fig_bleue, use_container_width=True)
         
@@ -608,7 +608,7 @@ def map_folium(df, nombre_stats):
     """
     
     dico_color_map = {'0' : 'red', '1' : 'lightblue', '2' : 'blue', '?': 'gray', '3': 'blue'}
-    dico_color_map.update({str(4+i): 'blue' for i in range(10)})
+    dico_color_map.update({str(4+i): 'blue' for i in range(maxi_vehi)})
     
     m = folium.Map(location = [49.74, 4.83], zoom_start = 10.5)   
     
