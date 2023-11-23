@@ -245,7 +245,7 @@ def graphique(jour, df, nombre_stats):
                         font_color = "#444444" if round(nombre_stats['n_moy'][k]) >0 else "#FFFFFF",
                         showarrow = False) for k, station in enumerate(liste_nom_stations)]
        
-    fig.update_layout(title = dict({'text' : 'Nombre de vélos dispo par station durant la journée',  # <b>' + str(jour) + ' octobre</b>',
+    fig.update_layout(title = dict({'text' : 'Nombre de vélos dispos par station durant la journée',  # <b>' + str(jour) + ' octobre</b>',
                                 'x' : 0.5,
                                 'xanchor': 'center'}),
                       # on affiche quand même les yticks, pour que les annotations puissent prendre leur place
