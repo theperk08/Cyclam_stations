@@ -749,8 +749,9 @@ mais restent purement indicatives (des vélos peuvent être loués entre deux re
 
 - Statistiques recueillies toutes les 15 minutes via API
 - traitement python : pandas
-- graphiques : plotly
+- graphiques : plotly, folium
 - application et mise en ligne : streamlit
+- images (vélo, pneu, borne) avec quelques modifications conformément à la license : <a href='https://pixabay.com'> ixabay</a>
 
 
 
