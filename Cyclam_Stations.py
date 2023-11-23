@@ -13,8 +13,8 @@ import base64
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-import matplotlib as plt
 
+# perso : en local, en ligne de commande via environnement anaconda
 # cd Documents\Data_Analyse\Cyclam
 # streamlit run Cyclam_Stations.py
 
@@ -214,9 +214,9 @@ def graphique(jour, df, nombre_stats):
             marker = dict(size = 10,
                           symbol = 'square',
                           color = df['vehicules.total'].apply(lambda x: marker_color(x)),
-                          colorbar = dict(title = 'Nb vélos',
+                          colorbar = dict(title = "<span style='color:black'>Nb vélos</span>",
                                         tickvals = color_vals,
-                                        ticktext = color_names),
+                                        ticktext = ["<span style='color:black'>" + color_name + "</span>" for color_name in color_names]),
                           colorscale = color_scale,
                           cmin = - 0.5,
                           cmax = num_colors - 0.5
@@ -342,7 +342,7 @@ def pie_rouge(df):
                                         opacity = 0.75,
                                         layer = "above")) #below
         
-        st.markdown("<h4 style='color:{c_red};text-align:center;'>".format(c_red = c_red) + liste_nom_stations[numero_rouge]  + "</h4><p style='text-align:center'> (Station le plus souvent sans vélo dispo :<br> pendant {:s})</p>".format(temps_max), unsafe_allow_html = True)
+        st.markdown("<h4 style='color:{c_red};text-align:center;'>".format(c_red = c_red) + liste_nom_stations[numero_rouge]  + "</h4><p style='color:black;text-align:center'> (Station le plus souvent sans vélo dispo :<br> pendant {:s})</p>".format(temps_max), unsafe_allow_html = True)
         
         st.plotly_chart(fig_rouge, use_container_width=True)
         
@@ -415,7 +415,7 @@ def pie_bleu(df, nombre_stats):
                                         opacity = 0.75,
                                         layer = "above")) #below
         
-        st.markdown("<h4 style='color:{c_blue};text-align:center;'>".format(c_blue=c_blue) + liste_nom_stations[n_moy_idxmaxi] + "</h4><p style='text-align:center'> (station ayant le plus de vélos dispos :<br>{:s} en moyenne)</p>".format(str(round(n_moy_maxi,1))), unsafe_allow_html = True)
+        st.markdown("<h4 style='color:{c_blue};text-align:center;'>".format(c_blue=c_blue) + liste_nom_stations[n_moy_idxmaxi] + "</h4><p style='color:black;text-align:center'> (station ayant le plus de vélos dispos :<br>{:s} en moyenne)</p>".format(str(round(n_moy_maxi,1))), unsafe_allow_html = True)
         
         st.plotly_chart(fig_bleue, use_container_width=True)
         
@@ -528,6 +528,9 @@ def graph_jour_heure(df, liste_heure_rouge):
                                               tickvals = list(df_heure['Date_heure'].unique())[::4],
                                               ticktext = ticktext,
                                               ticks = 'outside'
+                                             ),
+                                  yaxis = dict(showgrid = False,
+                                              visible = False,                                              
                                              ),
                                 )
     
@@ -651,12 +654,12 @@ with col01:
         
 with col02:
     st.markdown("<h2><center>" + bicolor(c_blue, c_red, 'Statistiques du nombre de vélos dispos par station Cyclam') + "</b></center></h2>", unsafe_allow_html = True)
-    st.markdown("<h5 style='text-align:center;'>par jour durant un mois d'octobre</h5>", unsafe_allow_html = True)
+    st.markdown("<h5 style='text-align:center;'>(<i>par jour durant un mois d'octobre</i>)</h5>", unsafe_allow_html = True)
         
 with col03:
     st.image('images/Electric_bike_red.png',use_column_width = True)
         
-st.markdown("Choisissez le jour du mois :")
+st.markdown("<span style='color:black'>Choisir le jour du mois :</span>", unsafe_allow_html = True)
         
 df = df_choisi(jour, heure_deb)
  
@@ -668,19 +671,11 @@ except AttributeError:
     # otherwise set it to false
     st.session_state.keep_graphics = False
 
-
-
-
-#with st.form('form_1'):
     
 jour = st.select_slider(label = "",
                         options = list(range(1, nb_jours + 1)),
-                                #min_value = 1,
-                                #max_value = nb_jours, 
-                                value=10,                               
-                               )
-    #submit1 = st.form_submit_button("OK !")
-            
+                        value = 10,                               
+                               )            
 
 if jour or st.session_state.keep_graphics: #submit1 or st.session_state.keep_graphics:
     st.session_state.keep_graphics = True
@@ -726,17 +721,7 @@ if jour or st.session_state.keep_graphics: #submit1 or st.session_state.keep_gra
             liste_plages_rouge = plage_heures(liste_heure_rouge)
             info_heure = "<p style='color:{c_red};text-align:center'>Il y a le plus de stations sans vélo dispo</p><h5 style ='text-align:center;color:{c_red}'>".format(c_red=c_red) + str(format_list_plage(liste_plages_rouge)) + "</h5>"
             st.markdown(info_heure, unsafe_allow_html = True)
-            graph_jour_heure(df, liste_heure_rouge)
-            
-    
-        
-    
-    
-   
-                                                     
-    
-    
-
+            graph_jour_heure(df, liste_heure_rouge)            
 
     
 infos = """
