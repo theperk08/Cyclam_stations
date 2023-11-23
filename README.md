@@ -17,7 +17,7 @@ Tableau de bord interactif des stations ${\color{#21bbef}C}$ ${\color{#d70464}y}
  
 Lien vers le tableau de bord : [Tableau de bord des stations Cyclam](https://cyclam-stations.streamlit.app/)  
 <p>
- <a href="https://cyclam-stations.streamlit.app/" target="_blank"><img src="images/Capture.jpg" width="800" height="600">
+ <a href="https://cyclam-stations.streamlit.app/" target="_blank"><img src="images/Capture1.jpg" width="800" height="600">
 </p>
 
 [site officiel Cyclam](https://cyclam.ecovelo.mobi/#/home)
