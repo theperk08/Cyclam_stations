@@ -682,7 +682,7 @@ jour = st.select_slider(label = "",
     #submit1 = st.form_submit_button("OK !")
             
 
-if st.session_state.keep_graphics: #submit1 or st.session_state.keep_graphics:
+if jour or st.session_state.keep_graphics: #submit1 or st.session_state.keep_graphics:
     st.session_state.keep_graphics = True
    
     df = df_choisi(jour, heure_deb)
