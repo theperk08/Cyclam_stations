@@ -568,7 +568,7 @@ def graph_classement(df, nombre_stats):
     
     fig_class.update_traces(textfont_size = 12, textangle = 0, textposition = "inside", cliponaxis = False)
     
-    fig_class.update_layout(title = dict(text = 'Classement des stations par<br>nombre moyen de vélos dispo', x = 0.5, xanchor = 'center'  ),
+    fig_class.update_layout(title = dict(text = 'Classement des stations par<br>nombre moyen de vélos dispos', x = 0.5, xanchor = 'center'  ),
                             height = 900,
                             width = 350,
                             autosize = False,
