@@ -319,7 +319,7 @@ def pie_rouge(df):
                                 plot_bgcolor = 'rgba(0,0,0,0)') 
         
         # on rajoute une image autour du pie
-        fig_rouge.add_layout_image(dict(source = Image.open("pneu1.png"),
+        fig_rouge.add_layout_image(dict(source = Image.open("images/pneu1.png"),
                                         # axes de référence
                                         xref = "x",
                                         yref = "y",
@@ -395,7 +395,7 @@ def pie_bleu(df, nombre_stats):
                                 paper_bgcolor = 'rgba(0,0,0,0)', #transparence
                                 plot_bgcolor = 'rgba(0,0,0,0)') 
         
-        fig_bleue.add_layout_image(dict(source = Image.open("pneu1.png"),
+        fig_bleue.add_layout_image(dict(source = Image.open("images/pneu1.png"),
                                         xref = "x",
                                         yref = "y",
                                         x = 2.5,
@@ -578,7 +578,7 @@ def graph_classement(df, nombre_stats):
                             plot_bgcolor = 'rgba(0,0,0,0)')
     
     # ajout image borne encadrant le graphique
-    fig_class.add_layout_image(dict(source = Image.open("borne1.png"),
+    fig_class.add_layout_image(dict(source = Image.open("images/borne1.png"),
                                     xref = "x",
                                     yref = "y",
                                     x = 1.01,
