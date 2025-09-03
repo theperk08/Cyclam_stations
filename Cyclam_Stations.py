@@ -650,14 +650,14 @@ def map_folium(df, nombre_stats):
 
 col00, col01, col02, col03, col04 = st.columns([3,2,12,2,3])
 with col01:
-    st.image('images/Electric_bike_blue.png',use_column_width = True)
+    st.image('images/Electric_bike_blue.png',use_container_width = True)
         
 with col02:
     st.markdown("<h2><center>" + bicolor(c_blue, c_red, 'Statistiques du nombre de vélos dispos par station Cyclam') + "</b></center></h2>", unsafe_allow_html = True)
     st.markdown("<h5 style='text-align:center;'>(<i>par jour durant un mois d'octobre</i>)</h5>", unsafe_allow_html = True)
         
 with col03:
-    st.image('images/Electric_bike_red.png',use_column_width = True)
+    st.image('images/Electric_bike_red.png',use_container_width = True)
         
 st.markdown("<span style='color:black'>Choisir le jour du mois :</span>", unsafe_allow_html = True)
         
